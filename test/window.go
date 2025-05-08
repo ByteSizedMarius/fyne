@@ -104,6 +104,10 @@ func (w *window) SetFixedSize(fixed bool) {
 	w.fixedSize = fixed
 }
 
+func (w *window) SetMinSize(width, height int) {
+	// no-op in test window
+}
+
 func (w *window) SetIcon(_ fyne.Resource) {
 	// no-op
 }

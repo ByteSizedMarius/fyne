@@ -110,6 +110,7 @@ type window struct {
 	requestedWidth, requestedHeight int
 	shouldWidth, shouldHeight       int
 	shouldExpand                    bool
+	minWidth, minHeight             int
 
 	pending []func()
 
@@ -236,19 +237,34 @@ func (w *window) fitContent() {
 		return
 	}
 
-	minWidth, minHeight := w.minSizeOnScreen()
+	contentMinWidth, contentMinHeight := w.minSizeOnScreen()
 	view := w.viewport
 	w.shouldWidth, w.shouldHeight = w.width, w.height
-	if w.width < minWidth || w.height < minHeight {
-		if w.width < minWidth {
-			w.shouldWidth = minWidth
+	
+	// Apply content minimum size if it's larger than the current size
+	if w.width < contentMinWidth || w.height < contentMinHeight {
+		if w.width < contentMinWidth {
+			w.shouldWidth = contentMinWidth
 		}
-		if w.height < minHeight {
-			w.shouldHeight = minHeight
+		if w.height < contentMinHeight {
+			w.shouldHeight = contentMinHeight
 		}
 		w.shouldExpand = true // queue the resize to happen on main
 	}
+	
+	// Determine the minimum allowed size (maximum of content minimum and user-set minimum)
+	minWidth := contentMinWidth
+	if w.minWidth > minWidth {
+		minWidth = w.minWidth
+	}
+	
+	minHeight := contentMinHeight
+	if w.minHeight > minHeight {
+		minHeight = w.minHeight
+	}
+	
 	if w.fixedSize {
+		// For fixed size windows, ensure the window size is large enough
 		if w.shouldWidth > w.requestedWidth {
 			w.requestedWidth = w.shouldWidth
 		}
@@ -257,6 +273,7 @@ func (w *window) fitContent() {
 		}
 		view.SetSizeLimits(w.requestedWidth, w.requestedHeight, w.requestedWidth, w.requestedHeight)
 	} else {
+		// For resizable windows, apply the minimum size constraint
 		view.SetSizeLimits(minWidth, minHeight, glfw.DontCare, glfw.DontCare)
 	}
 }

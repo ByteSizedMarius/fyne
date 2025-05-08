@@ -84,6 +84,13 @@ func (w *window) SetFixedSize(fixed bool) {
 	})
 }
 
+func (w *window) SetMinSize(width, height int) {
+	w.runOnMainWhenCreated(func() {
+		w.minWidth, w.minHeight = width, height
+		w.fitContent() // Re-apply the size constraints
+	})
+}
+
 func (w *window) Padded() bool {
 	return w.canvas.padded
 }
@@ -961,7 +968,7 @@ func (d *gLDriver) createWindow(title string, decorate bool) fyne.Window {
 
 	d.init()
 
-	ret = &window{title: title, decorate: decorate, driver: d}
+	ret = &window{title: title, decorate: decorate, driver: d, minWidth: 0, minHeight: 0}
 	ret.canvas = newCanvas()
 	ret.canvas.context = ret
 	ret.SetIcon(ret.icon)

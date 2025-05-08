@@ -31,6 +31,9 @@ type Window interface {
 	// size or allow resizing.
 	SetFixedSize(bool)
 
+	// SetMinSize sets the minimum size for the window.
+	SetMinSize(width, height int)
+
 	// CenterOnScreen places a window at the center of the monitor
 	// the Window object is currently positioned on.
 	CenterOnScreen()

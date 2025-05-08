@@ -55,6 +55,10 @@ func (w *window) SetFixedSize(bool) {
 	// no-op - all windows are fixed size
 }
 
+func (w *window) SetMinSize(width, height int) {
+	// no-op - mobile windows can't set min size
+}
+
 func (w *window) CenterOnScreen() {
 	// no-op
 }
